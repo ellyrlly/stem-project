@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>The Smart Pendulum Study – Main Menu</title>
+  <style>
+    :root {
+      --primary: #1e3a5f;
+      --accent: #2b6cb0;
+      --bg: #f0f4f8;
+      --card: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: #2d3748;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px;
+      -webkit-text-size-adjust: 100%;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+      max-width: 700px;
+      width: 100%;
+    }
+    header h1 {
+      font-size: clamp(1.5rem, 5vw, 2.1rem);
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    header p {
+      color: #4a5568;
+      font-size: clamp(0.9rem, 2.5vw, 1rem);
+      line-height: 1.5;
+    }
+    .group {
+      font-size: clamp(0.8rem, 2vw, 0.9rem);
+      color: #718096;
+      margin-top: 10px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 900px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 24px 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid #e2e8f0;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .card:hover, .card:active {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+    }
+    .card .icon { font-size: clamp(2.2rem, 6vw, 2.8rem); margin-bottom: 12px; }
+    .card h2 { font-size: clamp(1.15rem, 3.5vw, 1.35rem); margin-bottom: 8px; }
+    .card p { font-size: clamp(0.85rem, 2.5vw, 0.92rem); color: #4a5568; line-height: 1.45; }
+    .physics { border-top: 5px solid #2b6cb0; }
+    .physics h2 { color: #2b6cb0; }
+    .chemistry { border-top: 5px solid #276749; }
+    .chemistry h2 { color: #276749; }
+    .mathematics { border-top: 5px solid #6b46c1; }
+    .mathematics h2 { color: #6b46c1; }
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: #718096;
+      font-size: 0.85rem;
+      padding-bottom: 20px;
+    }
+    @media (max-width: 480px) {
+      body { padding: 16px 12px; }
+      .cards { gap: 14px; }
+      .card { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>The Smart Pendulum Study</h1>
+    <p>Integrated STEM Mini-Research Project</p>
+    <p class="group">
+      Group 4:<br>
+      Khairul Hafizi • Muhammad Ammar • Muhammad Adib<br>
+      Affan • Muhammad Aliff Najmi
+    </p>
+  </header>
+
+  <div class="cards">
+    <a href="physics_pendulum.html" class="card physics">
+      <div class="icon">⚛️</div>
+      <h2>Physics</h2>
+      <p>Determine gravitational acceleration from pendulum period vs length data. Calculate g and percentage error.</p>
+    </a>
+    <a href="chemistry_pendulum.html" class="card chemistry">
+      <div class="icon">🧪</div>
+      <h2>Chemistry</h2>
+      <p>Compare heat loss rates of a static bob versus a swinging (dynamic) bob. Analyse thermal effects.</p>
+    </a>
+    <a href="mathematics_pendulum.html" class="card mathematics">
+      <div class="icon">📐</div>
+      <h2>Mathematics</h2>
+      <p>Compare arc length and displacement (chord) at different release angles. Evaluate the small-angle approximation.</p>
+    </a>
+  </div>
+
+  <footer>
+    Smart Pendulum Study – Interactive STEM Analysis Tool<br>
+    Select a subject above to begin
+  </footer>
+</body>
+</html>

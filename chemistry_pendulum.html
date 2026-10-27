@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Chemistry – Smart Pendulum Study</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root { --primary:#1e3a5f; --accent:#276749; --bg:#f7fafc; --card:#fff; --border:#e2e8f0; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+      background:var(--bg); color:#2d3748; line-height:1.5;
+      padding:16px; -webkit-text-size-adjust:100%;
+    }
+    .container { max-width:900px; margin:0 auto; width:100%; }
+    header {
+      background:linear-gradient(135deg,#1a4731,var(--accent));
+      color:#fff; padding:20px 22px; border-radius:12px; margin-bottom:20px;
+    }
+    header h1 { font-size:clamp(1.2rem,4vw,1.55rem); margin-bottom:4px; }
+    header p { opacity:0.9; font-size:clamp(0.8rem,2.5vw,0.9rem); }
+    .section {
+      background:var(--card); border-radius:10px; padding:16px 18px;
+      margin-bottom:16px; border:1px solid var(--border);
+      box-shadow:0 1px 3px rgba(0,0,0,0.06);
+    }
+    .section h2 {
+      font-size:clamp(1.05rem,3vw,1.2rem); color:var(--primary);
+      margin-bottom:12px; padding-bottom:6px; border-bottom:2px solid var(--accent);
+    }
+    .row { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:10px; align-items:center; }
+    label { font-weight:500; min-width:120px; font-size:0.9rem; }
+    input[type=number] {
+      width:100%; max-width:140px; padding:10px 12px;
+      border:1px solid var(--border); border-radius:6px; font-size:16px;
+    }
+    input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(39,103,73,0.2); }
+    button {
+      background:var(--accent); color:#fff; border:none; padding:10px 16px;
+      border-radius:6px; cursor:pointer; font-weight:500; font-size:0.95rem;
+      -webkit-tap-highlight-color:transparent; min-height:44px;
+    }
+    button:hover { background:#22543d; }
+    button.secondary { background:#718096; } button.secondary:hover { background:#4a5568; }
+    button.danger { background:#c53030; padding:6px 12px; min-height:auto; } button.danger:hover { background:#9b2c2c; }
+    .btn-row { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0; justify-content:center; }
+    .back-btn {
+      display:inline-block; margin-bottom:14px; padding:10px 16px;
+      background:#4a5568; color:#fff; text-decoration:none; border-radius:6px;
+      font-size:0.9rem; font-weight:500; min-height:44px; line-height:24px;
+    }
+    .back-btn:hover { background:#2d3748; }
+    .table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:10px 0; }
+    table { width:100%; border-collapse:collapse; font-size:0.85rem; min-width:280px; }
+    th,td { border:1px solid var(--border); padding:8px 6px; text-align:center; }
+    th { background:#edf2f7; font-weight:600; }
+    .chart-box { height:280px; margin-top:16px; position:relative; }
+    .result-box {
+      background:#f0fff4; border-left:4px solid var(--accent);
+      padding:12px 14px; margin:12px 0; border-radius:0 6px 6px 0; font-size:0.9rem;
+    }
+    .summary-box {
+      background:#ebf8ff; border-left:4px solid #2b6cb0;
+      padding:12px 14px; border-radius:0 6px 6px 0; white-space:pre-line; font-size:0.88rem;
+    }
+    .industry-box {
+      background:#fffaf0; border-left:4px solid #c05621;
+      padding:12px 14px; border-radius:0 6px 6px 0; font-size:0.88rem;
+    }
+    .industry-box li { margin:6px 0 6px 16px; }
+    .hidden { display:none; }
+    footer { text-align:center; margin-top:24px; color:#718096; font-size:0.8rem; padding-bottom:16px; }
+    @media (max-width:480px) {
+      body { padding:12px; }
+      .section { padding:14px; }
+      .row label { min-width:100%; margin-bottom:2px; }
+      input[type=number] { max-width:100%; }
+      .chart-box { height:240px; }
+      .btn-row button { flex:1 1 auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back-btn">← Back to Main Menu</a>
+    <header>
+      <h1>Chemistry – Thermal Effect on Pendulum Bob</h1>
+      <p>The Smart Pendulum Study • Group 4<br>
+         Khairul Hafizi • Muhammad Ammar • Muhammad Adib • Affan • Muhammad Aliff Najmi</p>
+    </header>
+
+    <div class="section">
+      <h2>Bob Properties</h2>
+      <div class="row">
+        <label>Mass of bob (kg)</label>
+        <input type="number" id="mass" step="0.001" value="0.060" inputmode="decimal">
+      </div>
+      <div class="row">
+        <label>Specific heat c (J/kg·°C)</label>
+        <input type="number" id="c" step="1" value="450" inputmode="decimal">
+      </div>
+      <div class="row">
+        <label>Initial temp (°C)</label>
+        <input type="number" id="T0" step="0.1" value="60" inputmode="decimal">
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Static Bob Data</h2>
+      <div class="row">
+        <label>Time (s)</label>
+        <input type="number" id="st-t" step="1" placeholder="e.g. 20" inputmode="decimal">
+      </div>
+      <div class="row">
+        <label>Temperature (°C)</label>
+        <input type="number" id="st-temp" step="0.1" placeholder="e.g. 56.6" inputmode="decimal">
+      </div>
+      <button onclick="addStatic()">Add</button>
+      <div class="table-wrap">
+        <table id="static-table">
+          <thead><tr><th>Time (s)</th><th>Temp (°C)</th><th>Q (J)</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Dynamic (Swinging) Bob Data</h2>
+      <div class="row">
+        <label>Time (s)</label>
+        <input type="number" id="dy-t" step="1" placeholder="e.g. 20" inputmode="decimal">
+      </div>
+      <div class="row">
+        <label>Temperature (°C)</label>
+        <input type="number" id="dy-temp" step="0.1" placeholder="e.g. 46.7" inputmode="decimal">
+      </div>
+      <button onclick="addDynamic()">Add</button>
+      <div class="table-wrap">
+        <table id="dyn-table">
+          <thead><tr><th>Time (s)</th><th>Temp (°C)</th><th>Q (J)</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button onclick="calculate()">Calculate Heat Loss & Draw Graph</button>
+      <button class="secondary" onclick="loadSample()">Load Sample Data</button>
+      <button class="danger" onclick="clearAll()">Clear</button>
+    </div>
+
+    <div id="results" class="hidden">
+      <div class="section">
+        <h2>Results</h2>
+        <div id="result-box" class="result-box"></div>
+        <div class="chart-box"><canvas id="chart"></canvas></div>
+      </div>
+      <div class="section">
+        <h2>Summary</h2>
+        <div id="summary" class="summary-box"></div>
+      </div>
+      <div class="section">
+        <h2>Industrial Applications</h2>
+        <div class="industry-box">
+          <ol>
+            <li><strong>Thermal Management & HVAC</strong> – Forced convection is used in engine radiators, electronics cooling and industrial heat exchangers.</li>
+            <li><strong>Process Engineering</strong> – Design of efficient cooling/heating systems in chemical plants.</li>
+            <li><strong>Materials Testing</strong> – Temperature-time curves evaluate thermal properties of metals and alloys.</li>
+            <li><strong>Energy Efficiency</strong> – Optimising airflow around hot components reduces cooling energy.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+    <footer>Chemistry Module – Smart Pendulum Study</footer>
+  </div>
+
+  <script>
+    let staticData = [], dynData = [];
+    let chart = null;
+
+    function params() {
+      return {
+        mass: parseFloat(document.getElementById('mass').value) || 0.06,
+        c: parseFloat(document.getElementById('c').value) || 450,
+        T0: parseFloat(document.getElementById('T0').value) || 60
+      };
+    }
+
+    function addStatic() {
+      const t = parseFloat(document.getElementById('st-t').value);
+      const temp = parseFloat(document.getElementById('st-temp').value);
+      if (isNaN(t) || isNaN(temp)) { alert('Enter valid numbers'); return; }
+      const { mass, c, T0 } = params();
+      staticData.push({ t, temp, Q: mass * c * (T0 - temp) });
+      renderStatic();
+      document.getElementById('st-t').value = '';
+      document.getElementById('st-temp').value = '';
+    }
+
+    function renderStatic() {
+      const tbody = document.querySelector('#static-table tbody');
+      tbody.innerHTML = '';
+      staticData.forEach((r, i) => {
+        tbody.innerHTML += `<tr>
+          <td>${r.t}</td><td>${r.temp.toFixed(1)}</td><td>${r.Q.toFixed(1)}</td>
+          <td><button class="danger" onclick="staticData.splice(${i},1);renderStatic();">×</button></td>
+        </tr>`;
+      });
+    }
+
+    function addDynamic() {
+      const t = parseFloat(document.getElementById('dy-t').value);
+      const temp = parseFloat(document.getElementById('dy-temp').value);
+      if (isNaN(t) || isNaN(temp)) { alert('Enter valid numbers'); return; }
+      const { mass, c, T0 } = params();
+      dynData.push({ t, temp, Q: mass * c * (T0 - temp) });
+      renderDyn();
+      document.getElementById('dy-t').value = '';
+      document.getElementById('dy-temp').value = '';
+    }
+
+    function renderDyn() {
+      const tbody = document.querySelector('#dyn-table tbody');
+      tbody.innerHTML = '';
+      dynData.forEach((r, i) => {
+        tbody.innerHTML += `<tr>
+          <td>${r.t}</td><td>${r.temp.toFixed(1)}</td><td>${r.Q.toFixed(1)}</td>
+          <td><button class="danger" onclick="dynData.splice(${i},1);renderDyn();">×</button></td>
+        </tr>`;
+      });
+    }
+
+    function linearRegression(x, y) {
+      const n = x.length;
+      if (n < 2) return { slope:0, intercept:y[0]||0, R:0 };
+      let sx=0,sy=0,sxy=0,sx2=0;
+      for (let i=0;i<n;i++){ sx+=x[i]; sy+=y[i]; sxy+=x[i]*y[i]; sx2+=x[i]*x[i]; }
+      const slope = (n*sxy - sx*sy)/(n*sx2 - sx*sx);
+      const intercept = (sy - slope*sx)/n;
+      let ssTot=0, ssRes=0, meanY=sy/n;
+      for (let i=0;i<n;i++){ ssTot+=(y[i]-meanY)**2; ssRes+=(y[i]-(slope*x[i]+intercept))**2; }
+      const R = ssTot > 0 ? Math.sqrt(Math.max(0, 1 - ssRes/ssTot)) : 0;
+      return { slope, intercept, R };
+    }
+
+    function calculate() {
+      if (!staticData.length || !dynData.length) {
+        alert('Please enter data for both static and dynamic bob.');
+        return;
+      }
+      const rateS = staticData[staticData.length-1].Q / staticData[staticData.length-1].t;
+      const rateD = dynData[dynData.length-1].Q / dynData[dynData.length-1].t;
+      const ratio = rateD / rateS;
+
+      const xs = staticData.map(d => d.t), ys = staticData.map(d => d.temp);
+      const xd = dynData.map(d => d.t), yd = dynData.map(d => d.temp);
+      const regS = linearRegression(xs, ys);
+      const regD = linearRegression(xd, yd);
+
+      document.getElementById('result-box').innerHTML = `
+        Static bob – final temperature: <strong>${staticData[staticData.length-1].temp.toFixed(1)} °C</strong><br>
+        Dynamic bob – final temperature: <strong>${dynData[dynData.length-1].temp.toFixed(1)} °C</strong><br>
+        Heat lost (static) = ${staticData[staticData.length-1].Q.toFixed(1)} J → rate = ${rateS.toFixed(2)} W<br>
+        Heat lost (dynamic) = ${dynData[dynData.length-1].Q.toFixed(1)} J → rate = ${rateD.toFixed(2)} W<br>
+        Dynamic bob loses heat <strong>${ratio.toFixed(1)}×</strong> faster than static bob<br><br>
+        <em>Regression (Static):</em> slope = ${regS.slope.toFixed(4)} °C/s, R = ${regS.R.toFixed(3)}<br>
+        <em>Regression (Dynamic):</em> slope = ${regD.slope.toFixed(4)} °C/s, R = ${regD.R.toFixed(3)}
+      `;
+
+      document.getElementById('summary').textContent = `
+• Both bobs cool over time, but the swinging (dynamic) bob loses heat significantly faster.
+• The higher rate is caused by increased airflow around the moving bob (forced convection).
+• Static bob mainly loses heat by natural convection, radiation and conduction.
+• Linear regression slopes show the average cooling rates of each bob.
+      `.trim();
+
+      if (chart) chart.destroy();
+      const fitS = xs.map(x => regS.slope * x + regS.intercept);
+      const fitD = xd.map(x => regD.slope * x + regD.intercept);
+
+      chart = new Chart(document.getElementById('chart'), {
+        type: 'scatter',
+        data: {
+          datasets: [
+            { label:'Static data', data:staticData.map(d=>({x:d.t,y:d.temp})), backgroundColor:'#38a169', pointRadius:5 },
+            { label:'Static regression', data:xs.map((x,i)=>({x,y:fitS[i]})), type:'line', borderColor:'#276749', pointRadius:0, borderWidth:2 },
+            { label:'Dynamic data', data:dynData.map(d=>({x:d.t,y:d.temp})), backgroundColor:'#e53e3e', pointRadius:5 },
+            { label:'Dynamic regression', data:xd.map((x,i)=>({x,y:fitD[i]})), type:'line', borderColor:'#c53030', pointRadius:0, borderWidth:2 }
+          ]
+        },
+        options: {
+          responsive:true, maintainAspectRatio:false,
+          plugins:{ title:{ display:true, text:'Temperature vs Time (with regression lines)' }, legend:{ labels:{ boxWidth:12, font:{ size:11 } } } },
+          scales:{ x:{ type:'linear', title:{ display:true, text:'Time (s)' } }, y:{ title:{ display:true, text:'Temperature (°C)' } } }
+        }
+      });
+
+      document.getElementById('results').classList.remove('hidden');
+      document.getElementById('results').scrollIntoView({ behavior:'smooth' });
+    }
+
+    function loadSample() {
+      document.getElementById('mass').value = 0.060;
+      document.getElementById('c').value = 450;
+      document.getElementById('T0').value = 60;
+      const { mass, c, T0 } = params();
+      staticData = [
+        {t:0,temp:60},{t:20,temp:56.6},{t:40,temp:53.0},
+        {t:60,temp:50.0},{t:80,temp:46.6},{t:100,temp:45.2}
+      ].map(s => ({...s, Q: mass*c*(T0-s.temp)}));
+      dynData = [
+        {t:0,temp:60},{t:20,temp:46.7},{t:40,temp:45.2},
+        {t:60,temp:36.6},{t:80,temp:36.0},{t:100,temp:33.7}
+      ].map(s => ({...s, Q: mass*c*(T0-s.temp)}));
+      renderStatic(); renderDyn();
+      alert('Sample data loaded. Click Calculate.');
+    }
+
+    function clearAll() {
+      if (!confirm('Clear all data?')) return;
+      staticData = []; dynData = [];
+      renderStatic(); renderDyn();
+      document.getElementById('results').classList.add('hidden');
+      if (chart) { chart.destroy(); chart=null; }
+    }
+  </script>
+</body>
+</html>

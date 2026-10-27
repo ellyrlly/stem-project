@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Physics – Smart Pendulum Study</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root { --primary:#1e3a5f; --accent:#2b6cb0; --bg:#f7fafc; --card:#fff; --border:#e2e8f0; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+      background:var(--bg); color:#2d3748; line-height:1.5;
+      padding:16px; -webkit-text-size-adjust:100%;
+    }
+    .container { max-width:900px; margin:0 auto; width:100%; }
+    header {
+      background:linear-gradient(135deg,var(--primary),var(--accent));
+      color:#fff; padding:20px 22px; border-radius:12px; margin-bottom:20px;
+    }
+    header h1 { font-size:clamp(1.25rem,4vw,1.6rem); margin-bottom:4px; }
+    header p { opacity:0.9; font-size:clamp(0.8rem,2.5vw,0.9rem); }
+    .section {
+      background:var(--card); border-radius:10px; padding:16px 18px;
+      margin-bottom:16px; border:1px solid var(--border);
+      box-shadow:0 1px 3px rgba(0,0,0,0.06);
+    }
+    .section h2 {
+      font-size:clamp(1.05rem,3vw,1.2rem); color:var(--primary);
+      margin-bottom:12px; padding-bottom:6px; border-bottom:2px solid var(--accent);
+    }
+    .row {
+      display:flex; flex-wrap:wrap; gap:10px; margin-bottom:10px; align-items:center;
+    }
+    label { font-weight:500; min-width:110px; font-size:0.9rem; }
+    input[type=number] {
+      width:100%; max-width:140px; padding:10px 12px;
+      border:1px solid var(--border); border-radius:6px; font-size:16px;
+    }
+    input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(43,108,176,0.2); }
+    button {
+      background:var(--accent); color:#fff; border:none; padding:10px 16px;
+      border-radius:6px; cursor:pointer; font-weight:500; font-size:0.95rem;
+      -webkit-tap-highlight-color:transparent; min-height:44px;
+    }
+    button:hover { background:#2c5282; }
+    button.secondary { background:#718096; } button.secondary:hover { background:#4a5568; }
+    button.danger { background:#c53030; padding:6px 12px; min-height:auto; } button.danger:hover { background:#9b2c2c; }
+    .btn-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .back-btn {
+      display:inline-block; margin-bottom:14px; padding:10px 16px;
+      background:#4a5568; color:#fff; text-decoration:none; border-radius:6px;
+      font-size:0.9rem; font-weight:500; min-height:44px; line-height:24px;
+    }
+    .back-btn:hover { background:#2d3748; }
+    .table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:12px 0; }
+    table { width:100%; border-collapse:collapse; font-size:0.85rem; min-width:320px; }
+    th,td { border:1px solid var(--border); padding:8px 6px; text-align:center; }
+    th { background:#edf2f7; font-weight:600; }
+    .chart-box { height:280px; margin-top:16px; position:relative; }
+    .result-box {
+      background:#ebf8ff; border-left:4px solid var(--accent);
+      padding:12px 14px; margin:12px 0; border-radius:0 6px 6px 0; font-size:0.9rem;
+    }
+    .summary-box {
+      background:#f0fff4; border-left:4px solid #276749;
+      padding:12px 14px; border-radius:0 6px 6px 0; white-space:pre-line; font-size:0.88rem;
+    }
+    .industry-box {
+      background:#fffaf0; border-left:4px solid #c05621;
+      padding:12px 14px; border-radius:0 6px 6px 0; font-size:0.88rem;
+    }
+    .industry-box li { margin:6px 0 6px 16px; }
+    .hidden { display:none; }
+    footer { text-align:center; margin-top:24px; color:#718096; font-size:0.8rem; padding-bottom:16px; }
+    @media (max-width:480px) {
+      body { padding:12px; }
+      .section { padding:14px; }
+      .row label { min-width:100%; margin-bottom:2px; }
+      input[type=number] { max-width:100%; }
+      .chart-box { height:240px; }
+      .btn-row button { flex:1 1 auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back-btn">← Back to Main Menu</a>
+    <header>
+      <h1>Physics – Gravitational Acceleration</h1>
+      <p>The Smart Pendulum Study • Group 4<br>
+         Khairul Hafizi • Muhammad Ammar • Muhammad Adib • Affan • Muhammad Aliff Najmi</p>
+    </header>
+
+    <div class="section">
+      <h2>Enter Experimental Data</h2>
+      <p style="margin-bottom:12px;color:#4a5568;font-size:0.9rem;">Enter pendulum length and average time for 20 oscillations.</p>
+      <div class="row">
+        <label>Length L (cm)</label>
+        <input type="number" id="L" step="0.1" placeholder="e.g. 50" inputmode="decimal">
+      </div>
+      <div class="row">
+        <label>Avg time 20 osc (s)</label>
+        <input type="number" id="t" step="0.01" placeholder="e.g. 29.50" inputmode="decimal">
+      </div>
+      <button onclick="addRow()">Add Row</button>
+      <div class="table-wrap">
+        <table id="data-table">
+          <thead><tr><th>L (cm)</th><th>t<sub>avg</sub> (s)</th><th>T (s)</th><th>T² (s²)</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="btn-row">
+        <button onclick="calculate()">Calculate g & Draw Graph</button>
+        <button class="secondary" onclick="loadSample()">Load Sample Data</button>
+        <button class="danger" onclick="clearAll()">Clear</button>
+      </div>
+    </div>
+
+    <div id="results" class="hidden">
+      <div class="section">
+        <h2>Results</h2>
+        <div id="result-box" class="result-box"></div>
+        <div class="chart-box"><canvas id="chart"></canvas></div>
+      </div>
+      <div class="section">
+        <h2>Summary</h2>
+        <div id="summary" class="summary-box"></div>
+      </div>
+      <div class="section">
+        <h2>Industrial Applications</h2>
+        <div class="industry-box">
+          <ol>
+            <li><strong>Precision Timing & Metrology</strong> – Pendulum principles are used in high-precision clocks and seismic instruments.</li>
+            <li><strong>Structural Engineering</strong> – Design of tuned-mass dampers for skyscrapers and bridges (e.g. Taipei 101).</li>
+            <li><strong>Robotics & Sensors</strong> – Inverted-pendulum balancing robots and satellite attitude-control systems.</li>
+            <li><strong>Quality Control</strong> – Detect small changes in length or mass caused by temperature or wear.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+    <footer>Physics Module – Smart Pendulum Study</footer>
+  </div>
+
+  <script>
+    let data = [];
+    let chart = null;
+
+    function addRow() {
+      const L = parseFloat(document.getElementById('L').value);
+      const t = parseFloat(document.getElementById('t').value);
+      if (isNaN(L) || isNaN(t)) { alert('Enter valid numbers'); return; }
+      const T = t / 20, T2 = T * T;
+      data.push({ L, t, T, T2 });
+      renderTable();
+      document.getElementById('L').value = '';
+      document.getElementById('t').value = '';
+    }
+
+    function renderTable() {
+      const tbody = document.querySelector('#data-table tbody');
+      tbody.innerHTML = '';
+      data.forEach((r, i) => {
+        tbody.innerHTML += `<tr>
+          <td>${r.L}</td><td>${r.t.toFixed(2)}</td><td>${r.T.toFixed(3)}</td><td>${r.T2.toFixed(3)}</td>
+          <td><button class="danger" onclick="data.splice(${i},1);renderTable();">×</button></td>
+        </tr>`;
+      });
+    }
+
+    function linearRegression(x, y) {
+      const n = x.length;
+      let sx=0,sy=0,sxy=0,sx2=0;
+      for (let i=0;i<n;i++){ sx+=x[i]; sy+=y[i]; sxy+=x[i]*y[i]; sx2+=x[i]*x[i]; }
+      const slope = (n*sxy - sx*sy)/(n*sx2 - sx*sx);
+      const intercept = (sy - slope*sx)/n;
+      let ssTot=0, ssRes=0, meanY=sy/n;
+      for (let i=0;i<n;i++){ ssTot+=(y[i]-meanY)**2; ssRes+=(y[i]-(slope*x[i]+intercept))**2; }
+      const R = ssTot > 0 ? Math.sqrt(1 - ssRes/ssTot) : 0;
+      return { slope, intercept, R };
+    }
+
+    function calculate() {
+      if (data.length < 2) { alert('Need at least 2 data points'); return; }
+      const L_m = data.map(d => d.L/100);
+      const T2 = data.map(d => d.T2);
+      const { slope, intercept, R } = linearRegression(L_m, T2);
+      const g = (4*Math.PI*Math.PI)/slope;
+      const pct = Math.abs(g-9.81)/9.81*100;
+
+      document.getElementById('result-box').innerHTML = `
+        Number of data points = ${data.length}<br>
+        Gradient of T² vs L = ${slope.toFixed(3)} s²/m<br>
+        Experimental g = <strong>${g.toFixed(2)} m/s²</strong><br>
+        Standard g = 9.81 m/s²<br>
+        Percentage error = ${pct.toFixed(1)}%<br>
+        Correlation R = ${R.toFixed(4)}
+      `;
+
+      document.getElementById('summary').textContent = `
+• Experimental value of g = ${g.toFixed(2)} m/s² (error ≈ ${pct.toFixed(1)}%).
+• T² is directly proportional to L, confirming T² = (4π²/g)L.
+• A non-zero intercept usually means length was measured to the top of the bob instead of its centre of mass.
+• Random errors come mainly from stopwatch reaction time and counting oscillations.
+      `.trim();
+
+      if (chart) chart.destroy();
+      const fitY = L_m.map(x => slope*x + intercept);
+      chart = new Chart(document.getElementById('chart'), {
+        type: 'scatter',
+        data: {
+          datasets: [
+            { label:'Data points', data:L_m.map((x,i)=>({x,y:T2[i]})), backgroundColor:'#2b6cb0', pointRadius:6 },
+            { label:`Regression line (g=${g.toFixed(2)})`, data:L_m.map((x,i)=>({x,y:fitY[i]})), type:'line', borderColor:'#e53e3e', pointRadius:0, borderWidth:2, borderDash:[0] }
+          ]
+        },
+        options: {
+          responsive:true, maintainAspectRatio:false,
+          plugins:{ title:{ display:true, text:'T² vs Length (with regression line)' }, legend:{ labels:{ boxWidth:12, font:{ size:11 } } } },
+          scales:{ x:{ title:{ display:true, text:'L (m)' } }, y:{ title:{ display:true, text:'T² (s²)' } } }
+        }
+      });
+
+      document.getElementById('results').classList.remove('hidden');
+      document.getElementById('results').scrollIntoView({ behavior:'smooth' });
+    }
+
+    function loadSample() {
+      data = [
+        {L:20,t:19.12},{L:30,t:23.11},{L:40,t:26.49},
+        {L:50,t:29.50},{L:60,t:32.09},{L:70,t:34.54}
+      ].map(p => { const T=p.t/20; return {L:p.L,t:p.t,T,T2:T*T}; });
+      renderTable();
+      alert('Sample data loaded. Click Calculate.');
+    }
+
+    function clearAll() {
+      if (!confirm('Clear all data?')) return;
+      data = []; renderTable();
+      document.getElementById('results').classList.add('hidden');
+      if (chart) { chart.destroy(); chart=null; }
+    }
+  </script>
+</body>
+</html>

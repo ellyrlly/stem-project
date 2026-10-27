@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Mathematics – Smart Pendulum Study</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root { --primary:#1e3a5f; --accent:#6b46c1; --bg:#f7fafc; --card:#fff; --border:#e2e8f0; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+      background:var(--bg); color:#2d3748; line-height:1.5;
+      padding:16px; -webkit-text-size-adjust:100%;
+    }
+    .container { max-width:900px; margin:0 auto; width:100%; }
+    header {
+      background:linear-gradient(135deg,#44337a,var(--accent));
+      color:#fff; padding:20px 22px; border-radius:12px; margin-bottom:20px;
+    }
+    header h1 { font-size:clamp(1.2rem,4vw,1.55rem); margin-bottom:4px; }
+    header p { opacity:0.9; font-size:clamp(0.8rem,2.5vw,0.9rem); }
+    .section {
+      background:var(--card); border-radius:10px; padding:16px 18px;
+      margin-bottom:16px; border:1px solid var(--border);
+      box-shadow:0 1px 3px rgba(0,0,0,0.06);
+    }
+    .section h2 {
+      font-size:clamp(1.05rem,3vw,1.2rem); color:var(--primary);
+      margin-bottom:12px; padding-bottom:6px; border-bottom:2px solid var(--accent);
+    }
+    .row { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:10px; align-items:center; }
+    label { font-weight:500; min-width:120px; font-size:0.9rem; }
+    input[type=number] {
+      width:100%; max-width:140px; padding:10px 12px;
+      border:1px solid var(--border); border-radius:6px; font-size:16px;
+    }
+    input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(107,70,193,0.2); }
+    button {
+      background:var(--accent); color:#fff; border:none; padding:10px 16px;
+      border-radius:6px; cursor:pointer; font-weight:500; font-size:0.95rem;
+      -webkit-tap-highlight-color:transparent; min-height:44px;
+    }
+    button:hover { background:#553c9a; }
+    button.secondary { background:#718096; } button.secondary:hover { background:#4a5568; }
+    button.danger { background:#c53030; padding:6px 12px; min-height:auto; } button.danger:hover { background:#9b2c2c; }
+    .btn-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .back-btn {
+      display:inline-block; margin-bottom:14px; padding:10px 16px;
+      background:#4a5568; color:#fff; text-decoration:none; border-radius:6px;
+      font-size:0.9rem; font-weight:500; min-height:44px; line-height:24px;
+    }
+    .back-btn:hover { background:#2d3748; }
+    .table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:12px 0; }
+    table { width:100%; border-collapse:collapse; font-size:0.8rem; min-width:360px; }
+    th,td { border:1px solid var(--border); padding:8px 5px; text-align:center; }
+    th { background:#edf2f7; font-weight:600; }
+    .chart-box { height:280px; margin-top:16px; position:relative; }
+    .result-box {
+      background:#faf5ff; border-left:4px solid var(--accent);
+      padding:12px 14px; margin:12px 0; border-radius:0 6px 6px 0; font-size:0.9rem;
+    }
+    .summary-box {
+      background:#f0fff4; border-left:4px solid #276749;
+      padding:12px 14px; border-radius:0 6px 6px 0; white-space:pre-line; font-size:0.88rem;
+    }
+    .industry-box {
+      background:#fffaf0; border-left:4px solid #c05621;
+      padding:12px 14px; border-radius:0 6px 6px 0; font-size:0.88rem;
+    }
+    .industry-box li { margin:6px 0 6px 16px; }
+    .hidden { display:none; }
+    footer { text-align:center; margin-top:24px; color:#718096; font-size:0.8rem; padding-bottom:16px; }
+    @media (max-width:480px) {
+      body { padding:12px; }
+      .section { padding:14px; }
+      .row label { min-width:100%; margin-bottom:2px; }
+      input[type=number] { max-width:100%; }
+      .chart-box { height:240px; }
+      .btn-row button { flex:1 1 auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back-btn">← Back to Main Menu</a>
+    <header>
+      <h1>Mathematics – Arc Length vs Displacement</h1>
+      <p>The Smart Pendulum Study • Group 4<br>
+         Khairul Hafizi • Muhammad Ammar • Muhammad Adib • Affan • Muhammad Aliff Najmi</p>
+    </header>
+
+    <div class="section">
+      <h2>Enter Experimental Data</h2>
+      <div class="row">
+        <label>Pendulum length (cm)</label>
+        <input type="number" id="L" step="0.1" value="50" inputmode="decimal">
+      </div>
+      <p style="margin:10px 0;color:#4a5568;font-size:0.9rem;">Enter release angle, measured displacement and arc length.</p>
+      <div class="row">
+        <label>Angle (°)</label>
+        <input type="number" id="angle" step="1" placeholder="e.g. 30" inputmode="decimal">
+      </div>
+      <div class="row">
+        <label>Displacement (cm)</label>
+        <input type="number" id="disp" step="0.01" placeholder="e.g. 25.88" inputmode="decimal">
+      </div>
+      <div class="row">
+        <label>Arc length (cm)</label>
+        <input type="number" id="arc" step="0.01" placeholder="e.g. 26.18" inputmode="decimal">
+      </div>
+      <button onclick="addRow()">Add Row</button>
+      <div class="table-wrap">
+        <table id="data-table">
+          <thead>
+            <tr><th>Angle (°)</th><th>Disp. (cm)</th><th>Arc (cm)</th><th>Diff (cm)</th><th>% Diff</th><th></th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="btn-row">
+        <button onclick="calculate()">Calculate & Draw Graph</button>
+        <button class="secondary" onclick="loadSample()">Load Sample Data</button>
+        <button class="danger" onclick="clearAll()">Clear</button>
+      </div>
+    </div>
+
+    <div id="results" class="hidden">
+      <div class="section">
+        <h2>Results</h2>
+        <div id="result-box" class="result-box"></div>
+        <div class="chart-box"><canvas id="chart"></canvas></div>
+      </div>
+      <div class="section">
+        <h2>Summary</h2>
+        <div id="summary" class="summary-box"></div>
+      </div>
+      <div class="section">
+        <h2>Industrial Applications</h2>
+        <div class="industry-box">
+          <ol>
+            <li><strong>Structural & Civil Engineering</strong> – Arc vs chord is used in design of curved structures, bridges and arches.</li>
+            <li><strong>Robotics & Motion Planning</strong> – Path length (arc) versus straight-line distance (chord) for travel time and energy.</li>
+            <li><strong>Computer Graphics & Animation</strong> – Arc-length parameterisation for smooth motion along curves.</li>
+            <li><strong>Navigation & GPS</strong> – Great-circle (arc) versus approximate chord distances in aviation and maritime routing.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+    <footer>Mathematics Module – Smart Pendulum Study</footer>
+  </div>
+
+  <script>
+    let data = [];
+    let chart = null;
+
+    function addRow() {
+      const angle = parseFloat(document.getElementById('angle').value);
+      const disp = parseFloat(document.getElementById('disp').value);
+      const arc = parseFloat(document.getElementById('arc').value);
+      if (isNaN(angle) || isNaN(disp) || isNaN(arc)) { alert('Enter valid numbers'); return; }
+      const diff = arc - disp;
+      const pct = arc !== 0 ? (diff / arc) * 100 : 0;
+      data.push({ angle, disp, arc, diff, pct });
+      renderTable();
+      document.getElementById('angle').value = '';
+      document.getElementById('disp').value = '';
+      document.getElementById('arc').value = '';
+    }
+
+    function renderTable() {
+      const tbody = document.querySelector('#data-table tbody');
+      tbody.innerHTML = '';
+      data.forEach((r, i) => {
+        tbody.innerHTML += `<tr>
+          <td>${r.angle}</td><td>${r.disp.toFixed(2)}</td><td>${r.arc.toFixed(2)}</td>
+          <td>${r.diff.toFixed(2)}</td><td>${r.pct.toFixed(1)}%</td>
+          <td><button class="danger" onclick="data.splice(${i},1);renderTable();">×</button></td>
+        </tr>`;
+      });
+    }
+
+    function linearRegression(x, y) {
+      const n = x.length;
+      if (n < 2) return { slope:0, intercept:y[0]||0, R:0 };
+      let sx=0,sy=0,sxy=0,sx2=0;
+      for (let i=0;i<n;i++){ sx+=x[i]; sy+=y[i]; sxy+=x[i]*y[i]; sx2+=x[i]*x[i]; }
+      const slope = (n*sxy - sx*sy)/(n*sx2 - sx*sx);
+      const intercept = (sy - slope*sx)/n;
+      let ssTot=0, ssRes=0, meanY=sy/n;
+      for (let i=0;i<n;i++){ ssTot+=(y[i]-meanY)**2; ssRes+=(y[i]-(slope*x[i]+intercept))**2; }
+      const R = ssTot > 0 ? Math.sqrt(Math.max(0, 1 - ssRes/ssTot)) : 0;
+      return { slope, intercept, R };
+    }
+
+    function calculate() {
+      if (!data.length) { alert('Please enter at least one data row.'); return; }
+      const maxDiff = Math.max(...data.map(d => d.diff));
+      const maxPct = data.find(d => d.diff === maxDiff).pct;
+      const maxAngle = data.find(d => d.diff === maxDiff).angle;
+
+      const x = data.map(d => d.angle);
+      const yArc = data.map(d => d.arc);
+      const yDisp = data.map(d => d.disp);
+      const regArc = linearRegression(x, yArc);
+      const regDisp = linearRegression(x, yDisp);
+
+      document.getElementById('result-box').innerHTML = `
+        Number of angles tested = ${data.length}<br>
+        Maximum difference = <strong>${maxDiff.toFixed(2)} cm</strong> (${maxPct.toFixed(1)}%) at ${maxAngle}°<br>
+        At small angles the difference is almost zero (small-angle approximation holds).<br>
+        As angle increases, arc length grows faster than the straight-line displacement.<br><br>
+        <em>Regression (Arc length):</em> slope = ${regArc.slope.toFixed(4)} cm/°, R = ${regArc.R.toFixed(3)}<br>
+        <em>Regression (Displacement):</em> slope = ${regDisp.slope.toFixed(4)} cm/°, R = ${regDisp.R.toFixed(3)}
+      `;
+
+      document.getElementById('summary').textContent = `
+• Arc length increases linearly with angle (s = lθ).
+• Displacement increases more slowly following a sine function (d = 2l sin(θ/2)).
+• The gap between arc length and chord widens as the angle becomes larger.
+• Linear regression confirms arc length is more linear; displacement curves away at larger angles.
+• Small-angle approximation is valid only for small θ.
+      `.trim();
+
+      if (chart) chart.destroy();
+      const fitArc = x.map(v => regArc.slope * v + regArc.intercept);
+      const fitDisp = x.map(v => regDisp.slope * v + regDisp.intercept);
+
+      chart = new Chart(document.getElementById('chart'), {
+        type: 'scatter',
+        data: {
+          datasets: [
+            { label:'Arc length data', data:data.map(d=>({x:d.angle,y:d.arc})), backgroundColor:'#805ad5', pointRadius:5 },
+            { label:'Arc length regression', data:x.map((v,i)=>({x:v,y:fitArc[i]})), type:'line', borderColor:'#553c9a', pointRadius:0, borderWidth:2 },
+            { label:'Displacement data', data:data.map(d=>({x:d.angle,y:d.disp})), backgroundColor:'#dd6b20', pointRadius:5 },
+            { label:'Displacement regression', data:x.map((v,i)=>({x:v,y:fitDisp[i]})), type:'line', borderColor:'#c05621', pointRadius:0, borderWidth:2 }
+          ]
+        },
+        options: {
+          responsive:true, maintainAspectRatio:false,
+          plugins:{ title:{ display:true, text:'Arc Length vs Displacement (with regression lines)' }, legend:{ labels:{ boxWidth:12, font:{ size:11 } } } },
+          scales:{ x:{ type:'linear', title:{ display:true, text:'Release Angle (°)' } }, y:{ title:{ display:true, text:'Distance (cm)' } } }
+        }
+      });
+
+      document.getElementById('results').classList.remove('hidden');
+      document.getElementById('results').scrollIntoView({ behavior:'smooth' });
+    }
+
+    function loadSample() {
+      document.getElementById('L').value = 50;
+      data = [
+        {angle:10,disp:8.72,arc:8.73},{angle:20,disp:17.36,arc:17.46},
+        {angle:30,disp:25.88,arc:26.18},{angle:40,disp:34.20,arc:34.91},
+        {angle:50,disp:42.26,arc:43.63},{angle:60,disp:50.00,arc:52.37}
+      ].map(m => {
+        const diff = m.arc - m.disp;
+        return { ...m, diff, pct: (diff/m.arc)*100 };
+      });
+      renderTable();
+      alert('Sample data loaded. Click Calculate.');
+    }
+
+    function clearAll() {
+      if (!confirm('Clear all data?')) return;
+      data = []; renderTable();
+      document.getElementById('results').classList.add('hidden');
+      if (chart) { chart.destroy(); chart=null; }
+    }
+  </script>
+</body>
+</html>
